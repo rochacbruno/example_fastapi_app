@@ -2,10 +2,11 @@ FROM python:3.13-slim AS builder
 RUN pip install uv
 WORKDIR /app
 COPY pyproject.toml .python-version uv.lock ./
+ENV UV_COMPILE_BYTECODE=1
 RUN uv sync --frozen
 
 FROM python:3.13-slim
-RUN pip install uv
+COPY --from=builder /usr/local/bin/uv /usr/local/bin/uv
 WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 COPY main.py ./
