@@ -22,7 +22,7 @@ class SystemMetrics(BaseModel):
 # Endpoint principal
 
 
-@app.get("/metrics", response_model=SystemMetrics)
+@app.get("/metrics", response_model=SystemMetrics, tags=["main"])
 def get_system_metrics():
     
     simulate_heavy_load_randomly()
@@ -36,24 +36,24 @@ def get_system_metrics():
 
 # Endpoints para o Kubernetes
 
-@app.get("/health")
-@app.get("/healthz")
-@app.get("/ready")
-@app.get("/readyz")
+@app.get("/health", tags=["k8s"])
+@app.get("/healthz", tags=["k8s"])
+@app.get("/ready", tags=["k8s"])
+@app.get("/readyz", tags=["k8s"])
 def health_check():
     """Para de enviar trafego se estiver em um estado inadequado."""
     simulate_unhealthy_behavior_randomly()
     return {"status": "ok"}
 
 
-@app.get("/liveness")
+@app.get("/liveness", tags=["k8s"])
 def liveness_check():
     """Reinicia o Pod se estiver em um estado inadequado."""
     simulate_delay_randomly()
     return {"status": "ok"}
 
 
-@app.get("/startup")
+@app.get("/startup", tags=["k8s"])
 def startup_check():
     """Verifica se o Pod está pronto para receber trafego."""
     simulate_delay_randomly()
@@ -61,7 +61,7 @@ def startup_check():
 
 
 # Redirect `/` para `/docs`
-@app.get("/")
+@app.get("/", tags=["util"])
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
