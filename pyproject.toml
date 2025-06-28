@@ -1,0 +1,14 @@
+[project]
+name = "metrics-api"
+version = "0.1.0"
+description = "API de métricas do sistema"
+readme = "README.md"
+authors = [
+    { name = "Bruno Rocha", email = "rochacbruno@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115.14",
+    "psutil>=7.0.0",
+    "uvicorn>=0.34.3",
+]
