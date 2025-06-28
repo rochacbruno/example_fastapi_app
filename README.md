@@ -4,14 +4,14 @@ Esta é uma aplicação de exemplo,
 criada apenas para ser usada como demonstação.
 
 
-## Container
+## Rodando em Container
 
 ```bash
 docker build -t metrics -f Dockerfile .
 docker run --net=host --rm -it metrics
 ```
 
-## UV
+## Rodando local com UV
 
 Instale o UV.
 
