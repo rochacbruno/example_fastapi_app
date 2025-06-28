@@ -19,3 +19,8 @@ Instale o UV.
 uv sync  
 uv run uvicorn main:app --host 0.0.0.0 --port 8081
 ```
+
+## Outras branches
+
+- simulation = branch contendo simulações de carga e endpoints para o k8s
+- testes = branch contendo testes e CI
