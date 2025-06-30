@@ -15,6 +15,12 @@ docker run --net=host --rm -it metrics
 
 Instale o UV.
 
+```
+pip install uv
+# OU
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
 ```bash
 uv sync  
 uv run uvicorn main:app --host 0.0.0.0 --port 8081
@@ -36,6 +42,14 @@ metrics
 
 - SIMULATE_DELAY faz com que o startup e o liveness tenham delay fazendo o k8s reiniciar o POD ou esperar para enviar trafego.
 
+
+## Testando
+
+```bash
+uv run uv run pytest -v tests.py
+# OU
+uv run coverage run -m pytest -v tests.py
+```
 
 ## Poe
 
