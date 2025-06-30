@@ -26,7 +26,6 @@ class SystemMetrics(BaseModel):
 def get_system_metrics():
     
     simulate_heavy_load_randomly()
-    simulate_unhealthy_behavior_randomly()
 
     memory = psutil.virtual_memory().percent
     cpu = psutil.cpu_percent(interval=1)
@@ -74,7 +73,9 @@ def simulate_heavy_load_randomly():
     if not os.getenv("SIMULATE_HEAVY_LOAD"):
         return
     if random.random() < 0.5:
-        time.sleep(random.uniform(0.1, 0.5))
+        time.sleep(random.uniform(0.1, 10))
+    else:
+        simulate_unhealthy_behavior_randomly()
 
 
 def simulate_unhealthy_behavior_randomly():
@@ -89,4 +90,4 @@ def simulate_delay_randomly():
     """Simula um atraso aleatório."""
     if not os.getenv("SIMULATE_DELAY"):
         return
-    time.sleep(random.uniform(0.1, 0.5))
+    time.sleep(random.uniform(0.1, 10))
