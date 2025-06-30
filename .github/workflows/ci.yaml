@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [gha]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install UV
+      uses: astral-sh/setup-uv@v1
+      with:
+        version: "latest"
+        
+    - name: Sync dependencies
+      run: uv sync --all-groups
+      
+    - name: Run tests with coverage
+      run: poe coverage
