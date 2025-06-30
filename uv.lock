@@ -463,13 +463,11 @@ dependencies = [
 ]
 
 [package.dev-dependencies]
-dev = [
-    { name = "poethepoet" },
-]
 test = [
     { name = "coverage" },
     { name = "httpx" },
     { name = "locust" },
+    { name = "poethepoet" },
     { name = "pytest" },
 ]
 
@@ -481,11 +479,11 @@ requires-dist = [
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "poethepoet", specifier = ">=0.36.0" }]
 test = [
     { name = "coverage", specifier = ">=7.9.1" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "locust", specifier = ">=2.37.11" },
+    { name = "poethepoet", specifier = ">=0.36.0" },
     { name = "pytest", specifier = ">=8.4.1" },
 ]
 
