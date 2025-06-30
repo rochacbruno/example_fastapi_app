@@ -20,6 +20,9 @@ jobs:
         
     - name: Sync dependencies
       run: uv sync --all-groups
+
+    - name: install poe tool
+      run: uv tool install poethepoet
       
     - name: Run tests with coverage
       run: poe coverage
