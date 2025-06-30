@@ -10,3 +10,9 @@ wheels/
 .venv
 
 .python-version
+
+# Coverage
+.coverage
+coverage.txt
+coverage.xml
+htmlcov/

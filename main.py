@@ -24,7 +24,7 @@ class SystemMetrics(BaseModel):
 
 @app.get("/metrics", response_model=SystemMetrics, tags=["main"])
 def get_system_metrics():
-    
+
     simulate_heavy_load_randomly()
 
     memory = psutil.virtual_memory().percent
@@ -34,6 +34,7 @@ def get_system_metrics():
 
 
 # Endpoints para o Kubernetes
+
 
 @app.get("/health", tags=["k8s"])
 @app.get("/healthz", tags=["k8s"])
