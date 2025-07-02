@@ -1,22 +1,97 @@
-name: CI
+name: Executa Testes, Builda a Imagem e Atualiza Manifestos
 
 on:
   pull_request:
-    branches: [gha]
-  workflow_dispatch:
+    branches: [fabio/testeactions]
+    types: [closed]
 
 jobs:
-  test:
+  tests:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
-    
+    env:
+      COVERAGE_THRESHOLD: 80
+
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Install UV
-      uses: astral-sh/setup-uv@v1
-      with:
-        version: "latest"
-        
-    - name: Sync dependencies
-      run: uv sync --all-groups
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Install UV
+        uses: astral-sh/setup-uv@v1
+        with:
+          version: "latest"
+
+      - name: Sync dependencies
+        run: uv sync --all-groups
+
+      - name: install poe tool
+        run: uv tool install poethepoet
+
+      - name: Run tests via Poe (gera coverage.txt)
+        run: poe coverage
+
+      - id: check_cov
+        name: Verifica cobertura minima
+        run: |
+          COV_RAW=$(cat coverage.txt | tr -d '\n\r')
+          echo "coverage_raw=$COV_RAW" >> "$GITHUB_OUTPUT"
+          
+          FAIL=$(echo "$COV_RAW < $COVERAGE_THRESHOLD" | bc -l)
+          if [ "$FAIL" -eq 1 ]; then
+            echo "::error ::Sua aplicacao nao atingiu a cobertura minima necessaria para o deploy. Esperado: ${COVERAGE_THRESHOLD}% - Atingido: ${COV_RAW}%"
+            exit 1
+          fi
+
+  build-and-publish:
+    needs: tests
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+
+    env:
+      IMAGE_NAME: ${{ vars.IMAGE_NAME }}
+      IMAGE_TAG: ${{ github.sha }}
+      REGISTRY: ghcr.io
+      FULL_IMAGE: ghcr.io/${{ github.repository_owner }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
+      VALUES_FILE: manifests/values.yaml
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Login no GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build e push da imagem
+        id: build
+        run: |
+          FULL_IMAGE=$( echo "${REGISTRY}/${{ github.repository_owner }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}" | tr '[:upper:]' '[:lower:]')
+          echo "full_image=$FULL_IMAGE" >> "$GITHUB_OUTPUT"
+          docker build -t $FULL_IMAGE .
+          docker push $FULL_IMAGE
+
+      - name: Atualiza tag da imagem em values.yaml
+        run: |
+          sed -i "s|^\(.*image:[[:space:]]*\).*|\1${{ steps.build.outputs.full_image }}|" "$VALUES_FILE"
+
+      - name: Commit e push da alteracao
+        env:
+          TARGET_BRANCH: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git config --global user.name  "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add "$VALUES_FILE"
+          git commit -m "ci: Atualizada a image para ${{ steps.build.outputs.full_image }}" || echo "Nada para commitar"
+          git push origin HEAD:$TARGET_BRANCH

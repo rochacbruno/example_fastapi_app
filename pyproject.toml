@@ -12,3 +12,95 @@ dependencies = [
     "psutil>=7.0.0",
     "uvicorn>=0.34.3",
 ]
+
+[dependency-groups]
+dev = [
+    "poethepoet>=0.36.0",
+]
+test = [
+    "coverage>=7.9.1",
+    "httpx>=0.28.1",
+    "locust>=2.37.11",
+    "pytest>=8.4.1",
+]
+
+[tool.poe.tasks]
+_test_with_coverage.shell = "uv run coverage run -m pytest -v tests.py"
+_coverage_xml.shell = "uv run coverage xml"
+_coverage_html.shell = "uv run coverage html"
+_coverage_report.shell = "uv run coverage report"
+_coverage_report_total.shell = "uv run coverage report | grep TOTAL | awk '{print $4}' | sed 's/%//' > coverage.txt"
+_isort.shell = "uvx -p 3.13 isort --profile=black -m 3 *.py"
+_black.shell = "uvx -p 3.13 black --target-version py313 *.py"
+
+[tool.poe.tasks.format]
+help = "Formata o código"
+sequence = [
+    "_isort",
+    "_black",
+]
+
+[tool.poe.tasks.test]
+help = "Executa os testes"
+cmd = "uv run pytest -v tests.py"
+
+[tool.poe.tasks.coverage]
+help = "Executa os testes com cobertura de código"
+sequence = [
+    "_test_with_coverage",
+    "_coverage_xml",
+    "_coverage_html",
+    "_coverage_report",
+    "_coverage_report_total",
+]
+
+[tool.poe.tasks.locust]
+help = "Executa os testes de carga com Locust"
+cmd = "uv run locust -f locustfile.py"
+
+[tool.poe.tasks.locust_all]
+help = "Builda a imagem, executa o container em modo simulação e executa os testes de carga com Locust"
+sequence = [
+    "docker_build",
+    "docker_simulation_daemon",
+    "locust",
+]
+
+[tool.poe.tasks.docker_build]
+help = "Builda a imagem Docker"
+cmd = "docker build -t metrics:${tag} -f Dockerfile ."
+args = [{name = "tag", default = "latest"}]
+
+[tool.poe.tasks.docker_run]
+help = "Executa a imagem Docker"
+cmd = "docker run --net=host --rm -it metrics:${tag}"
+args = [{name = "tag", default = "latest"}]
+
+[tool.poe.tasks.docker_simulation]
+help = "Executa a imagem Docker com simulações de carga e comportamento inadequado"
+cmd = "docker run --net=host --rm -it -e SIMULATE_HEAVY_LOAD=1 -e SIMULATE_UNHEALTHY_BEHAVIOR=1 -e SIMULATE_DELAY=1 metrics:${tag}"
+args = [{name = "tag", default = "latest"}]
+
+[tool.poe.tasks.docker_simulation_daemon]
+help = "Executa a imagem Docker com simulações de carga e comportamento inadequado em modo daemon"
+cmd = "docker run --net=host --rm -d -e SIMULATE_HEAVY_LOAD=1 -e SIMULATE_UNHEALTHY_BEHAVIOR=1 -e SIMULATE_DELAY=1 metrics:${tag}"
+args = [{name = "tag", default = "latest"}]
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "tests.py",
+    ".venv/*",
+    "*/site-packages/*"
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.html]
+directory = "htmlcov"
+
+[tool.coverage.xml]
+output = "coverage.xml"

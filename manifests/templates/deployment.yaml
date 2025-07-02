@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: semana-devops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: semana-devops
+  template:
+    metadata:
+      labels:
+        app: semana-devops
+    spec:
+      containers:
+        - name: semana-devops
+          image: {{ .Values.image }}
+          ports:
+            - containerPort: 8081
