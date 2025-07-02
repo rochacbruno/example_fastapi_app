@@ -26,7 +26,7 @@ uv sync
 uv run uvicorn main:app --host 0.0.0.0 --port 8081
 ```
 
-## Simulação
+## Outras branches
 
 ```bash
 docker run --net=host --rm -it \
