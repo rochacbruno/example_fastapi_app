@@ -2,7 +2,7 @@ name: Executa Testes, Builda a Imagem e Atualiza Manifestos
 
 on:
   pull_request:
-    branches: [fabio/testeactions]
+    branches: [main]
     types: [closed]
 
 jobs:
