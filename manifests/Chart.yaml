@@ -1,0 +1,5 @@
+apiVersion: 1
+name: python-app
+version: 1.0.0
+description: Chart for this simple python app
+
