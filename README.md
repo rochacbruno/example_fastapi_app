@@ -1,4 +1,4 @@
-# Alteração para testar - Edit
+# Alteração para testar - Editando imagem
 
 # Metrics API
 
