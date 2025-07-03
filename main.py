@@ -17,7 +17,7 @@ class SystemMetrics(BaseModel):
     memoria: float  # Uso de memória em %
     cpu: float  # Uso de CPU em %
     disk: float  # Uso de disco em %
-
+    print("hello")
 
 # Endpoint principal
 
