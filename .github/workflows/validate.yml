@@ -36,4 +36,4 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
-          python alert_on_slack.py "Some commits in PR #${{ github.event.pull_request.number }} are invalid."
+          python .github/scripts/alert_on_slack.py "Some commits in PR #${{ github.event.pull_request.number }} are invalid."
