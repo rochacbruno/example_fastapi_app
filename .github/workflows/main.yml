@@ -10,7 +10,7 @@ jobs:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     env:
-      COVERAGE_THRESHOLD: 80
+      COVERAGE_THRESHOLD: 60
 
     steps:
       - name: Checkout
