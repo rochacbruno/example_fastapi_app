@@ -13,19 +13,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Install UV
+        uses: astral-sh/setup-uv@v1
         with:
-          python-version: '3.x'
+          version: "latest"
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt || true
+      - name: Sync dependencies
+        run: uv sync --all-groups
 
       - name: Run commit validation
         id: validate
         continue-on-error: true
         run: |
-          python .github/scripts/validate_commits.py origin/gha HEAD
+          uv run .github/scripts/validate_commits.py origin/gha HEAD
 
       - name: Alert on Slack if validation fails
         if: steps.validate.outcome == 'failure'
@@ -36,4 +36,4 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_ACTOR: ${{ github.actor }}
         run: |
-          python .github/scripts/alert_on_slack.py "Some commits in PR #${{ github.event.pull_request.number }} are invalid."
+          uv run .github/scripts/alert_on_slack.py "Some commits in PR #${{ github.event.pull_request.number }} are invalid."

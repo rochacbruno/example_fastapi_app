@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import sys
-import requests
+import httpx
 
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
 SLACK_CHANNEL = os.getenv("SLACK_CHANNEL", "#alerts")
@@ -21,7 +21,7 @@ def send_slack_alert(message: str):
         "icon_emoji": ":rotating_light:"
     }
 
-    response = requests.post(SLACK_WEBHOOK_URL, json=payload)
+    response = httpx.post(SLACK_WEBHOOK_URL, json=payload)
     if response.status_code != 200:
         print(f"❌ Slack notification failed: {response.status_code} - {response.text}")
         sys.exit(1)
