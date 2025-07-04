@@ -65,7 +65,6 @@ def startup_check():
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
 
-
 # Funções de simulação
 
 
